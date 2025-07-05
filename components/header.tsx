@@ -1,9 +1,10 @@
 "use client"
 
-import { Bell, Search, MessageSquare, Grid3X3, ChevronRight, SidebarIcon } from "lucide-react"
+import {Bell, Search, MessageSquare, Grid3X3, ChevronRight, SidebarIcon, User, LogOut} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useState, useEffect } from "react"
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 
 export function Header() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
@@ -48,7 +49,7 @@ export function Header() {
       <div className="flex items-center justify-between w-full px-[5px] py-0 h-[50px]">
         {/* Sidebar Toggle */}
         <div className="flex items-center space-x-[5px]">
-          <Button variant="primary" size="icon" onClick={toggleSidebar} className="group shadow-none">
+          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="group shadow-none">
             <SidebarIcon className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
           </Button>
         </div>
@@ -67,10 +68,28 @@ export function Header() {
           <Button variant="ghost" size="icon">
             <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </Button>
-          <Avatar className="w-8 h-8">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
+          <Popover>
+            <PopoverTrigger asChild>
+              <div className="flex items-center gap-2 cursor-pointer">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-48">
+              <div className="flex flex-col space-y-1">
+                <Button variant="ghost" className="justify-start">
+                  <User className="mr-2 h-4 w-4" />
+                  My Profile
+                </Button>
+                <Button variant="ghost" className="justify-start">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </header>
