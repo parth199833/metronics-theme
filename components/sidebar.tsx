@@ -112,61 +112,63 @@ export function Sidebar({ activePage, setActivePage }: SidebarProps) {
     const isActive = activePage === item.id
 
     return (
-      <div key={item.id} className="mb-2 px-4 pt-3">
-        <div
-          className={`flex items-center ${isCollapsed ? "justify-center" : "space-x-2"} cursor-pointer py-2 px-3 rounded-lg transition-colors ${
-            isActive
-              ? sidebarBgIsLight
-                ? "bg-gray-200" // Light sidebar: darker background for active
-                : "bg-gray-600" // Dark sidebar: lighter background for active
-              : sidebarBgIsLight
-                ? "hover:bg-gray-200" // Light sidebar: same hover as active
-                : "hover:bg-gray-600" // Dark sidebar: same hover as active
-          }`}
-          onClick={() => setActivePage(item.id)}
-        >
-          <IconComponent
-            className={`w-4 h-4 ${
-              sidebarBgIsLight
-                ? "text-black" // Always black on light sidebar
-                : "text-white" // Always white on dark sidebar
-            }`}
-          />
-          {!isCollapsed && (
-            <span
-              className={`text-sm ${
-                isActive
-                  ? "text-black font-medium" // Always black when active/selected
-                  : sidebarBgIsLight
-                    ? "text-black" // Black text on light sidebar (white background)
-                    : "text-white" // White text on dark sidebar (non-white background)
+        <div key={item.id} className="mb-2 px-4 pt-3">
+          <div
+              className={`flex items-center ${isCollapsed ? "justify-center" : "space-x-2"} cursor-pointer py-2 px-3 rounded-lg transition-colors ${
+                  isActive
+                      ? sidebarBgIsLight
+                          ? "bg-gray-200" // Light sidebar: darker background for active
+                          : "bg-gray-600" // Dark sidebar: lighter background for active
+                      : sidebarBgIsLight
+                          ? "hover:bg-gray-200" // Light sidebar: same hover as active
+                          : "hover:bg-gray-600" // Dark sidebar: same hover as active
               }`}
-            >
+              onClick={() => setActivePage(item.id)}
+          >
+            {IconComponent && (
+                <IconComponent
+                    className={`w-4 h-4 flex-shrink-0 ${
+                        sidebarBgIsLight
+                            ? "text-black" // Always black on light sidebar
+                            : "text-white" // Always white on dark sidebar
+                    }`}
+                />
+            )}
+            {!isCollapsed && (
+                <span
+                    className={`text-sm ${
+                        isActive
+                            ? "text-white font-medium" // Always black when active/selected
+                            : sidebarBgIsLight
+                                ? "text-black" // Black text on light sidebar (white background)
+                                : "text-white" // White text on dark sidebar (non-white background)
+                    }`}
+                >
               {item.name}
             </span>
-          )}
+            )}
+          </div>
         </div>
-      </div>
     )
   }
 
   return (
-    <aside
-      ref={sidebarRef}
-      className={`fixed left-0 top-0 ${isCollapsed ? "w-16" : "w-64"} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen flex flex-col z-20 transition-all duration-300`}
-    >
-      {/* Logo - Fixed at top */}
-      <div className="flex items-center space-x-2 p-4">
-        <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-red-500 rounded transform rotate-45"></div>
-        {!isCollapsed && (
-          <span className={`text-base font-bold ${sidebarBgIsLight ? "text-black" : "text-white"}`}>Company</span>
-        )}
-      </div>
+      <aside
+          ref={sidebarRef}
+          className={`fixed left-0 top-0 ${isCollapsed ? "w-16" : "w-64"} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen flex flex-col z-20 transition-all duration-300`}
+      >
+        {/* Logo - Fixed at top */}
+        <div className="flex items-center space-x-2 p-4">
+          <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-red-500 rounded transform rotate-45"></div>
+          {!isCollapsed && (
+              <span className={`text-base font-bold ${sidebarBgIsLight ? "text-black" : "text-white"}`}>Company</span>
+          )}
+        </div>
 
-      {/* Scrollable menu content */}
-      <div className="flex-1 overflow-y-auto border-0 mx-0 py-0 px-[5px]">
-        {menuConfig.map((item) => renderMenuItem(item))}
-      </div>
-    </aside>
+        {/* Scrollable menu content */}
+        <div className="flex-1 overflow-y-auto border-0 mx-0 py-0 px-[5px]">
+          {menuConfig.map((item) => renderMenuItem(item))}
+        </div>
+      </aside>
   )
 }
