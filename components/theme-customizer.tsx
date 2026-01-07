@@ -2,6 +2,30 @@
 
 import { useState, useEffect } from "react"
 import { SheetContent } from "@/components/ui/sheet"
+import { ColorPicker } from "@/components/color-picker"
+
+function setCookie(name: string, value: string, days = 365) {
+  const expires = new Date()
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000)
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`
+  console.log("[v0] Cookie set:", name, value)
+}
+
+function getCookie(name: string): string | null {
+  const nameEQ = name + "="
+  const ca = document.cookie.split(";")
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i]
+    while (c.charAt(0) === " ") c = c.substring(1, c.length)
+    if (c.indexOf(nameEQ) === 0) {
+      const value = c.substring(nameEQ.length, c.length)
+      console.log("[v0] Cookie retrieved:", name, value)
+      return value
+    }
+  }
+  console.log("[v0] Cookie not found:", name)
+  return null
+}
 
 export function ThemeCustomizer() {
   const [selectedTheme, setSelectedTheme] = useState("light")
@@ -9,32 +33,23 @@ export function ThemeCustomizer() {
   const [selectedSidebarColor, setSelectedSidebarColor] = useState("#FFFFFF")
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "light"
-    const savedPrimaryColor = localStorage.getItem("primaryColor") || "#E91E63"
-    const savedSidebarColor = localStorage.getItem("sidebarColor") || "#FFFFFF"
+    const savedTheme = getCookie("theme") || "light"
+    const savedPrimaryColor = getCookie("primaryColor") || "#E91E63"
+    const savedSidebarColor = getCookie("sidebarColor") || "#FFFFFF"
+
+    console.log("[v0] Loading saved settings:", { savedTheme, savedPrimaryColor, savedSidebarColor })
 
     setSelectedTheme(savedTheme)
     setSelectedPrimaryColor(savedPrimaryColor)
     setSelectedSidebarColor(savedSidebarColor)
 
     // Apply saved primary color immediately
-    document.documentElement.style.setProperty("--primary-color", savedPrimaryColor)
+    applyPrimaryColor(savedPrimaryColor)
 
     // Apply saved sidebar color immediately
-    const sidebar = document.querySelector("aside")
-    if (sidebar) {
-      sidebar.style.backgroundColor = savedSidebarColor
+    applySidebarColor(savedSidebarColor)
 
-      // Adjust text color based on background brightness
-      const isLight = isLightColor(savedSidebarColor)
-      const textColor = isLight ? "#374151" : "#FFFFFF"
-
-      const allText = sidebar.querySelectorAll("span, div")
-      const allIcons = sidebar.querySelectorAll("svg")
-      allText.forEach((el) => (el.style.color = textColor))
-      allIcons.forEach((el) => (el.style.color = textColor))
-    }
-
+    // Apply theme
     if (savedTheme === "dark") {
       document.documentElement.classList.add("dark")
     } else if (savedTheme === "system") {
@@ -45,30 +60,25 @@ export function ThemeCustomizer() {
     }
   }, [])
 
-  const handlePrimaryColorChange = (color: string) => {
-    setSelectedPrimaryColor(color)
-
-    // Set CSS custom property for primary color
+  const applyPrimaryColor = (color: string) => {
+    console.log("[v0] Applying primary color:", color)
     document.documentElement.style.setProperty("--primary-color", color)
-    localStorage.setItem("primaryColor", color)
 
-    // Update all primary color elements immediately
     const style = document.createElement("style")
     style.innerHTML = `
-    .bg-primary { background-color: ${color} !important; }
-    .text-primary { color: ${color} !important; }
-    .border-primary { border-color: ${color} !important; }
-    .hover\\:bg-primary:hover { background-color: ${color} !important; }
-    .focus\\:ring-primary:focus { --tw-ring-color: ${color}; }
-    .border-b-primary { border-bottom-color: ${color} !important; }
-    .bg-primary\\/10 { background-color: ${color}1A !important; }
-    .border-b-2.border-blue-600 { border-bottom-color: ${color} !important; }
-    .text-blue-600 { color: ${color} !important; }
-    .border-blue-600 { border-color: ${color} !important; }
-    .hover\\:bg-blue-50:hover { background-color: ${color}0D !important; }
-  `
+      .bg-primary { background-color: ${color} !important; }
+      .text-primary { color: ${color} !important; }
+      .border-primary { border-color: ${color} !important; }
+      .hover\\:bg-primary:hover { background-color: ${color} !important; }
+      .focus\\:ring-primary:focus { --tw-ring-color: ${color}; }
+      .border-b-primary { border-bottom-color: ${color} !important; }
+      .bg-primary\\/10 { background-color: ${color}1A !important; }
+      .border-b-2.border-blue-600 { border-bottom-color: ${color} !important; }
+      .text-blue-600 { color: ${color} !important; }
+      .border-blue-600 { border-color: ${color} !important; }
+      .hover\\:bg-blue-50:hover { background-color: ${color}0D !important; }
+    `
 
-    // Remove existing primary color style if it exists
     const existingStyle = document.getElementById("dynamic-primary-color")
     if (existingStyle) {
       existingStyle.remove()
@@ -77,40 +87,50 @@ export function ThemeCustomizer() {
     style.id = "dynamic-primary-color"
     document.head.appendChild(style)
 
-    // Force update specific elements
     setTimeout(() => {
       const primaryElements = document.querySelectorAll('[class*="primary"]')
       primaryElements.forEach((element) => {
         if (element.classList.contains("bg-primary")) {
-          element.style.backgroundColor = color
+          ;(element as HTMLElement).style.backgroundColor = color
         }
         if (element.classList.contains("text-primary")) {
-          element.style.color = color
+          ;(element as HTMLElement).style.color = color
         }
         if (element.classList.contains("border-primary")) {
-          element.style.borderColor = color
+          ;(element as HTMLElement).style.borderColor = color
         }
       })
     }, 100)
   }
 
-  const handleSidebarColorChange = (color: string) => {
-    setSelectedSidebarColor(color)
-    localStorage.setItem("sidebarColor", color)
-
+  const applySidebarColor = (color: string) => {
+    console.log("[v0] Applying sidebar color:", color)
     const sidebar = document.querySelector("aside")
     if (sidebar) {
-      sidebar.style.backgroundColor = color
+      ;(sidebar as HTMLElement).style.backgroundColor = color
 
-      // Adjust text color based on background brightness
       const isLight = isLightColor(color)
       const textColor = isLight ? "#374151" : "#FFFFFF"
 
       const allText = sidebar.querySelectorAll("span, div")
       const allIcons = sidebar.querySelectorAll("svg")
-      allText.forEach((el) => (el.style.color = textColor))
-      allIcons.forEach((el) => (el.style.color = textColor))
+      allText.forEach((el) => ((el as HTMLElement).style.color = textColor))
+      allIcons.forEach((el) => ((el as HTMLElement).style.color = textColor))
     }
+  }
+
+  const handlePrimaryColorChange = (color: string) => {
+    console.log("[v0] Primary color changed to:", color)
+    setSelectedPrimaryColor(color)
+    setCookie("primaryColor", color)
+    applyPrimaryColor(color)
+  }
+
+  const handleSidebarColorChange = (color: string) => {
+    console.log("[v0] Sidebar color changed to:", color)
+    setSelectedSidebarColor(color)
+    setCookie("sidebarColor", color)
+    applySidebarColor(color)
   }
 
   const isLightColor = (color: string) => {
@@ -161,31 +181,11 @@ export function ThemeCustomizer() {
                 className={`w-12 h-12 bg-blue-500 rounded-lg border-2 ${selectedPrimaryColor === "#2196F3" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
                 onClick={() => handlePrimaryColorChange("#2196F3")}
               ></div>
-              <div
-                className={`w-12 h-12 rounded-lg border-2 ${selectedPrimaryColor === "#E91E63" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer flex items-center justify-center relative`}
-                style={{ backgroundColor: selectedPrimaryColor }}
-              >
-                <input
-                  type="color"
-                  value={selectedPrimaryColor}
-                  onChange={(e) => handlePrimaryColorChange(e.target.value)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  title="Pick a custom color"
-                />
-                <svg
-                  className="w-6 h-6 text-white pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  />
-                </svg>
-              </div>
+              <ColorPicker
+                value={selectedPrimaryColor}
+                onChange={handlePrimaryColorChange}
+                isSelected={!["#9C27B0", "#009688", "#FF9800", "#F44336", "#2196F3"].includes(selectedPrimaryColor)}
+              />
             </div>
           </div>
 
@@ -198,7 +198,7 @@ export function ThemeCustomizer() {
                 onClick={() => {
                   setSelectedTheme("light")
                   document.documentElement.classList.remove("dark")
-                  localStorage.setItem("theme", "light")
+                  setCookie("theme", "light")
                 }}
               >
                 <div className="flex justify-center mb-2">
@@ -218,7 +218,7 @@ export function ThemeCustomizer() {
                 onClick={() => {
                   setSelectedTheme("dark")
                   document.documentElement.classList.add("dark")
-                  localStorage.setItem("theme", "dark")
+                  setCookie("theme", "dark")
                 }}
               >
                 <div className="flex justify-center mb-2">
@@ -243,20 +243,7 @@ export function ThemeCustomizer() {
                   } else {
                     document.documentElement.classList.remove("dark")
                   }
-                  localStorage.setItem("theme", "system")
-
-                  // Listen for system theme changes
-                  const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-                  const handleChange = (e) => {
-                    if (selectedTheme === "system") {
-                      if (e.matches) {
-                        document.documentElement.classList.add("dark")
-                      } else {
-                        document.documentElement.classList.remove("dark")
-                      }
-                    }
-                  }
-                  mediaQuery.addEventListener("change", handleChange)
+                  setCookie("theme", "system")
                 }}
               >
                 <div className="flex justify-center mb-2">
@@ -274,58 +261,35 @@ export function ThemeCustomizer() {
             </div>
           </div>
 
-          {/* Semi Dark */}
+          {/* Sidebar Color */}
           <div className="mb-6">
-            {/* Sidebar Color */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Sidebar Color</h3>
-              <div className="grid grid-cols-6 gap-2">
-                <div
-                  className={`w-12 h-12 bg-white border-2 ${selectedSidebarColor === "#FFFFFF" ? "border-blue-500" : "border-gray-300 hover:border-gray-400"} cursor-pointer rounded-lg`}
-                  onClick={() => handleSidebarColorChange("#FFFFFF")}
-                ></div>
-                <div
-                  className={`w-12 h-12 bg-gray-800 rounded-lg border-2 ${selectedSidebarColor === "#1F2937" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
-                  onClick={() => handleSidebarColorChange("#1F2937")}
-                ></div>
-                <div
-                  className={`w-12 h-12 bg-purple-500 rounded-lg border-2 ${selectedSidebarColor === "#9C27B0" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
-                  onClick={() => handleSidebarColorChange("#9C27B0")}
-                ></div>
-                <div
-                  className={`w-12 h-12 bg-teal-500 rounded-lg border-2 ${selectedSidebarColor === "#009688" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
-                  onClick={() => handleSidebarColorChange("#009688")}
-                ></div>
-                <div
-                  className={`w-12 h-12 bg-orange-400 rounded-lg border-2 ${selectedSidebarColor === "#FF9800" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
-                  onClick={() => handleSidebarColorChange("#FF9800")}
-                ></div>
-                <div
-                  className={`w-12 h-12 rounded-lg border-2 ${selectedSidebarColor === selectedPrimaryColor ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer flex items-center justify-center relative`}
-                  style={{ backgroundColor: selectedSidebarColor }}
-                >
-                  <input
-                    type="color"
-                    value={selectedSidebarColor}
-                    onChange={(e) => handleSidebarColorChange(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    title="Pick a custom sidebar color"
-                  />
-                  <svg
-                    className="w-6 h-6 text-white pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                    />
-                  </svg>
-                </div>
-              </div>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Sidebar Color</h3>
+            <div className="grid grid-cols-6 gap-2">
+              <div
+                className={`w-12 h-12 bg-white border-2 ${selectedSidebarColor === "#FFFFFF" ? "border-blue-500" : "border-gray-300 hover:border-gray-400"} cursor-pointer rounded-lg`}
+                onClick={() => handleSidebarColorChange("#FFFFFF")}
+              ></div>
+              <div
+                className={`w-12 h-12 bg-gray-800 rounded-lg border-2 ${selectedSidebarColor === "#1F2937" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
+                onClick={() => handleSidebarColorChange("#1F2937")}
+              ></div>
+              <div
+                className={`w-12 h-12 bg-purple-500 rounded-lg border-2 ${selectedSidebarColor === "#9C27B0" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
+                onClick={() => handleSidebarColorChange("#9C27B0")}
+              ></div>
+              <div
+                className={`w-12 h-12 bg-teal-500 rounded-lg border-2 ${selectedSidebarColor === "#009688" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
+                onClick={() => handleSidebarColorChange("#009688")}
+              ></div>
+              <div
+                className={`w-12 h-12 bg-orange-400 rounded-lg border-2 ${selectedSidebarColor === "#FF9800" ? "border-blue-500" : "border-gray-200 hover:border-gray-300"} cursor-pointer`}
+                onClick={() => handleSidebarColorChange("#FF9800")}
+              ></div>
+              <ColorPicker
+                value={selectedSidebarColor}
+                onChange={handleSidebarColorChange}
+                isSelected={!["#FFFFFF", "#1F2937", "#9C27B0", "#009688", "#FF9800"].includes(selectedSidebarColor)}
+              />
             </div>
           </div>
         </div>

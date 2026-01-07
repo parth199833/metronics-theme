@@ -1,95 +1,92 @@
 "use client"
 
-import {Bell, Search, MessageSquare, Grid3X3, ChevronRight, SidebarIcon, User, LogOut} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useState, useEffect } from "react"
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import { Search, Bell, HelpCircle, Settings, Sparkles, PanelLeft, PanelLeftClose, LayoutGrid } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function Header() {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [sidebarWidth, setSidebarWidth] = useState(256)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === "b") {
-        event.preventDefault()
-        toggleSidebar()
-      }
+    const handleSidebarToggle = (e: CustomEvent) => {
+      setIsCollapsed(e.detail.collapsed)
     }
-
-    const handleToggle = (event: CustomEvent) => {
-      setSidebarWidth(event.detail.collapsed ? 64 : 256)
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    window.addEventListener("toggleSidebar", handleToggle as EventListener)
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("toggleSidebar", handleToggle as EventListener)
-    }
+    window.addEventListener("toggleSidebar", handleSidebarToggle as EventListener)
+    return () => window.removeEventListener("toggleSidebar", handleSidebarToggle as EventListener)
   }, [])
 
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed)
-    // Dispatch custom event to communicate with MenuHeader
-    window.dispatchEvent(
-      new CustomEvent("toggleSidebar", {
-        detail: { collapsed: !isSidebarCollapsed },
-      }),
-    )
+    if (isCollapsed) {
+      window.dispatchEvent(new CustomEvent("expandSidebar"))
+    } else {
+      window.dispatchEvent(new CustomEvent("collapseSidebar"))
+    }
   }
 
   return (
-    <header
-      className="fixed top-0 right-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-12.5 flex items-center shadow-sm px-0"
-      style={{ left: sidebarWidth + "px", width: `calc(100% - ${sidebarWidth}px)` }}
-    >
-      <div className="flex items-center justify-between w-full px-[5px] py-0 h-[50px]">
-        {/* Sidebar Toggle */}
-        <div className="flex items-center space-x-[5px]">
-          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="group shadow-none">
-            <SidebarIcon className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+    <header className="fixed top-0 left-0 right-0 z-30 bg-card border-b border-border flex items-center px-3 h-[47px]">
+      <div className="flex items-center justify-between w-full">
+        {/* Left: Toggle button, Logo */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={toggleSidebar}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
           </Button>
+
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-primary rounded flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">J</span>
+            </div>
+            <span className="font-semibold text-foreground">Jira</span>
+          </div>
         </div>
 
-        {/* Header Actions */}
-        <div className="flex items-center justify-start space-x-0 flex-row leading-[1.7rem]">
-          <Button variant="ghost" size="icon" className="group">
-            <Search className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 transition-colors" />
+        {/* Center: Search */}
+        <div className="flex-1 max-w-xl mx-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search"
+              className="w-full pl-10 pr-4 h-9 bg-muted/50 border-border focus:bg-background"
+            />
+          </div>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-1">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground h-8 px-3 text-sm font-medium">
+            + Create
           </Button>
-          <Button variant="ghost" size="icon">
-            <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+
+          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+            <Sparkles className="h-4 w-4" />
+            <span className="text-sm">Ask Rovo</span>
           </Button>
-          <Button variant="ghost" size="icon">
-            <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Bell className="h-4 w-4 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <Grid3X3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <HelpCircle className="h-4 w-4 text-muted-foreground" />
           </Button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <div className="flex items-center gap-2 cursor-pointer">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-48">
-              <div className="flex flex-col space-y-1">
-                <Button variant="ghost" className="justify-start">
-                  <User className="mr-2 h-4 w-4" />
-                  My Profile
-                </Button>
-                <Button variant="ghost" className="justify-start">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Settings className="h-4 w-4 text-muted-foreground" />
+          </Button>
+
+          <Avatar className="h-8 w-8 ml-2">
+            <AvatarImage src="/placeholder.svg?height=32&width=32" />
+            <AvatarFallback className="bg-purple-600 text-white text-xs">PP</AvatarFallback>
+          </Avatar>
         </div>
       </div>
     </header>
