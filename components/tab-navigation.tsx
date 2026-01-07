@@ -44,30 +44,6 @@ const tabs = [
 
 export function TabNavigation({ activeTab = "allwork", onTabChange }: TabNavigationProps) {
   return (
-    <div className="flex items-center gap-1 border-b border-border px-2 overflow-x-auto">
-      {tabs.map((tab) => {
-        const Icon = tab.icon
-        const isActive = activeTab === tab.id || tab.active
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange?.(tab.id)}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-[1px]",
-              isActive
-                ? "text-primary border-primary"
-                : "text-muted-foreground hover:text-foreground border-transparent hover:border-border",
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {tab.name}
-          </button>
-        )
-      })}
-      <Button variant="ghost" size="sm" className="text-muted-foreground gap-1">
-        More <span className="text-xs bg-muted px-1.5 py-0.5 rounded">6</span>
-        <ChevronDown className="h-3 w-3" />
-      </Button>
-    </div>
+    null
   )
 }

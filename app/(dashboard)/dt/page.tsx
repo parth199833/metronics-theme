@@ -7,7 +7,7 @@ export default function DataTablePage() {
   return (
     <div className="flex flex-col h-[calc(100vh-56px)]">
       {/* Breadcrumb & Project Header */}
-      <div className="px-6 py-3 border-b border-border bg-card">
+      <div className="border-b border-border bg-card py-0 px-[5px]">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
           <span className="hover:underline cursor-pointer">Spaces</span>
           <span>/</span>

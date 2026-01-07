@@ -25,10 +25,10 @@ export default function DashboardLayout({
   }, [])
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Header />
       <Sidebar />
-      <main className="pt-14 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
+      <main className="pt-14 transition-all duration-300 pl-[15px] bg-white" style={{ marginLeft: `${sidebarWidth}px` }}>
         {children}
       </main>
 

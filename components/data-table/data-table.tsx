@@ -472,35 +472,9 @@ export function DataTable() {
       {/* Filter Bar */}
       <div className="data-table-filters flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
-          {/* AI Toggle */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 border-purple-500 text-purple-500 hover:bg-purple-50 bg-transparent rounded-none"
-          >
-            <Sparkles className="h-4 w-4" />
-            AI
-          </Button>
 
-          {/* Basic/JQL Tabs */}
-          <div className="flex items-center border rounded-none">
-            <Button
-              variant={activeTab === "basic" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-8 rounded-none"
-              onClick={() => setActiveTab("basic")}
-            >
-              Basic
-            </Button>
-            <Button
-              variant={activeTab === "jql" ? "secondary" : "ghost"}
-              size="sm"
-              className="h-8 rounded-none"
-              onClick={() => setActiveTab("jql")}
-            >
-              JQL
-            </Button>
-          </div>
+
+ 
 
           {/* Search */}
           <div className="relative">
@@ -619,23 +593,7 @@ export function DataTable() {
           </Button>
         </div>
 
-        {/* Right side actions */}
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-8 bg-transparent rounded-none">
-            Group
-          </Button>
-          <div className="flex items-center border rounded-none">
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none">
-              <List className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none">
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </div>
+       
       </div>
 
       {/* Table */}
