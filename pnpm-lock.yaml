@@ -129,8 +129,8 @@ importers:
         specifier: ^19
         version: 19.0.0
       react-colorful:
-        specifier: ^1.2.5
-        version: 1.2.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-day-picker:
         specifier: 8.10.1
         version: 8.10.1(date-fns@4.1.0)(react@19.0.0)
@@ -1328,11 +1328,11 @@ packages:
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
-  react-colorful@1.2.5:
-    resolution: {integrity: sha512-FIwXo+XymyEppGJWF5d+GoR1415F1dm8Jl3KvQ166Y91/nyAWMczXgipkOxvcMTgeoyXTQwg7fHKKSXcXJ5tNw==}
+  react-colorful@5.6.1:
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
     peerDependencies:
-      react: ^16.8.0
-      react-dom: ^16.8.0
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   react-day-picker@8.10.1:
     resolution: {integrity: sha512-TMx7fNbhLk15eqcMt+7Z7S2KF7mfTId/XJDjKE8f+IUcFn0l08/kI4FiYTL/0yuOLmEcbR4Fwe3GJf/NiiMnPA==}
@@ -2619,7 +2619,7 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
-  react-colorful@1.2.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  react-colorful@5.6.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)

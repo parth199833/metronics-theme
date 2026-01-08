@@ -122,14 +122,14 @@ export function JiraFilter({
       <PopoverContent className="w-[280px] p-0 rounded-none shadow-lg" align="start">
         {/* Header with Operator Dropdown */}
         {showOperator && (
-          <div className="px-3 py-2 border-b border-border">
+          <div className="py-2 border-b border-border px-[9px]">
             <Popover open={operatorDropdownOpen} onOpenChange={setOperatorDropdownOpen}>
               <PopoverTrigger asChild>
-                <button className="flex items-center justify-between w-full hover:bg-accent/50 rounded px-1 py-0.5 -mx-1">
+                <button className="flex items-center justify-between w-full bg-muted/50 hover:bg-muted border border-border rounded px-2 py-1.5 transition-colors">
                   <span className="text-sm font-medium text-foreground">
                     {label} {currentOperatorLabel}
                   </span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-2" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0 rounded-none shadow-lg" align="start">
