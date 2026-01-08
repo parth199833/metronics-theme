@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
-import { Star, LinkIcon, RefreshCw, Edit2, MoreHorizontal, Maximize2, Copy, Plus } from "lucide-react"
+import { Star, LinkIcon, RefreshCw, Edit2, MoreHorizontal, Maximize2, Copy, Plus, Check, X } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useState } from "react"
 import { GadgetPanel } from "@/components/gadget-panel"
@@ -76,6 +76,30 @@ export default function DashboardPage() {
   const [isGadgetPanelOpen, setIsGadgetPanelOpen] = useState(false)
   const [gadgetSearchQuery, setGadgetSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [chartTitles, setChartTitles] = useState({
+    status: "Pie Chart: Intalk New UI Task Status",
+    priority: "Pie Chart: Intalk New UI Priority",
+  })
+  const [editingChart, setEditingChart] = useState<string | null>(null)
+  const [tempTitle, setTempTitle] = useState("")
+
+  const handleTitleClick = (chartId: string, currentTitle: string) => {
+    if (isEditMode) {
+      setEditingChart(chartId)
+      setTempTitle(currentTitle)
+    }
+  }
+
+  const handleTitleSave = (chartId: string) => {
+    if (tempTitle.trim()) {
+      setChartTitles((prev) => ({
+        ...prev,
+        [chartId]: tempTitle.trim(),
+      }))
+    }
+    setEditingChart(null)
+    setTempTitle("")
+  }
 
   const layoutOptions = [
     { id: "one-column", label: "One column", icon: "▭", gridClass: "grid-cols-1" },
@@ -205,8 +229,43 @@ export default function DashboardPage() {
         <div className={`grid ${currentLayoutClass} gap-6`}>
           {/* Status Chart */}
           <Card className="p-6 bg-card">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-foreground text-base">Pie Chart: Intalk New UI Task Status</h3>
+            <div className="flex items-center justify-between mb-6 relative">
+              {editingChart === "status" ? (
+                <div className="w-full max-w-md">
+                  <input
+                    type="text"
+                    value={tempTitle}
+                    onChange={(e) => setTempTitle(e.target.value)}
+                    autoFocus
+                    className="w-full bg-card text-foreground px-3 py-2 rounded border border-primary text-base font-semibold"
+                  />
+                  <div className="absolute top-full mt-2 left-0 flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                      onClick={() => handleTitleSave("status")}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => setEditingChart(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <h3
+                  className={`font-semibold text-foreground text-base ${isEditMode ? "cursor-pointer hover:opacity-70 transition-opacity" : ""}`}
+                  onClick={() => handleTitleClick("status", chartTitles.status)}
+                >
+                  {chartTitles.status}
+                </h3>
+              )}
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                   <Maximize2 className="h-4 w-4" />
@@ -263,8 +322,43 @@ export default function DashboardPage() {
 
           {/* Priority Chart */}
           <Card className="p-6 bg-card">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-foreground text-base">Pie Chart: Intalk New UI Priority</h3>
+            <div className="flex items-center justify-between mb-6 relative">
+              {editingChart === "priority" ? (
+                <div className="w-full max-w-md">
+                  <input
+                    type="text"
+                    value={tempTitle}
+                    onChange={(e) => setTempTitle(e.target.value)}
+                    autoFocus
+                    className="w-full bg-card text-foreground px-3 py-2 rounded border border-primary text-base font-semibold"
+                  />
+                  <div className="absolute top-full mt-2 left-0 flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                      onClick={() => handleTitleSave("priority")}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => setEditingChart(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <h3
+                  className={`font-semibold text-foreground text-base ${isEditMode ? "cursor-pointer hover:opacity-70 transition-opacity" : ""}`}
+                  onClick={() => handleTitleClick("priority", chartTitles.priority)}
+                >
+                  {chartTitles.priority}
+                </h3>
+              )}
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                   <Maximize2 className="h-4 w-4" />
