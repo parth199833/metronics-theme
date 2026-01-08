@@ -211,7 +211,7 @@ export function Sidebar() {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pt-0 pb-2 font-sans">
         {/* Top Menu */}
-        <div className="px-2 space-y-0.5">
+        <div className="px-2 py-2 space-y-0.5">
           {topMenuItems.map((item) => (
             <div key={item.id}>
               {renderMenuItem(item)}

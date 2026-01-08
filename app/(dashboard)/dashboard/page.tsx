@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card"
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="px-2 py-2 space-y-6">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Dashboards</h1>
