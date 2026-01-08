@@ -1,17 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-  Home,
-  FolderKanban,
-  ChevronRight,
-  Plus,
-  MoreHorizontal,
-  ExternalLink,
-  Settings,
-  Users,
-  Table2,
-} from "lucide-react"
+import { Home, ChevronRight, Plus, MoreHorizontal, ExternalLink, Settings, Users, Table2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -34,11 +24,57 @@ const projectsItems = [
   },
 ]
 
+function isColorDark(hexColor: string): boolean {
+  if (!hexColor || hexColor.length < 7) return false
+  const hex = hexColor.replace("#", "")
+  const r = Number.parseInt(hex.substring(0, 2), 16)
+  const g = Number.parseInt(hex.substring(2, 4), 16)
+  const b = Number.parseInt(hex.substring(4, 6), 16)
+  // Calculate luminance
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance < 0.5
+}
+
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(";").shift() || null
+  return null
+}
+
 export function Sidebar() {
   const [expandedSections, setExpandedSections] = useState<string[]>(["projects"])
   const [expandedProjects, setExpandedProjects] = useState<string[]>(["technology"])
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isDarkSidebar, setIsDarkSidebar] = useState(false)
   const pathname = usePathname()
+
+  useEffect(() => {
+    const checkSidebarColor = () => {
+      const sidebarColor = getCookie("sidebarColor")
+      if (sidebarColor) {
+        setIsDarkSidebar(isColorDark(sidebarColor))
+      }
+    }
+
+    checkSidebarColor()
+
+    // Listen for sidebar color changes
+    const handleSidebarColorChange = () => {
+      checkSidebarColor()
+    }
+
+    window.addEventListener("sidebarColorChanged", handleSidebarColorChange)
+
+    // Check periodically for cookie changes
+    const interval = setInterval(checkSidebarColor, 500)
+
+    return () => {
+      window.removeEventListener("sidebarColorChanged", handleSidebarColorChange)
+      clearInterval(interval)
+    }
+  }, [])
 
   useEffect(() => {
     window.dispatchEvent(
@@ -74,6 +110,15 @@ export function Sidebar() {
     const isActive = pathname === item.href
     const isExpanded = expandedSections.includes(item.id)
 
+    const textColorClass = isDarkSidebar ? "text-white/80 hover:text-white" : "text-foreground/80 hover:text-foreground"
+    const activeTextClass = isDarkSidebar ? "text-white font-medium" : "text-primary font-medium"
+    const iconColorClass = isDarkSidebar
+      ? "text-white/60 group-hover:text-white"
+      : "text-muted-foreground group-hover:text-foreground"
+    const activeIconClass = isDarkSidebar ? "text-white" : "text-primary"
+    const hoverBgClass = isDarkSidebar ? "hover:bg-white/10" : "hover:bg-foreground/5"
+    const activeBgClass = isDarkSidebar ? "bg-white/20" : "bg-primary/10"
+
     return (
       <div key={item.id}>
         <Link
@@ -88,9 +133,7 @@ export function Sidebar() {
             "flex items-center gap-2 text-sm rounded-md transition-all duration-150 group",
             isCollapsed ? "px-2 py-2 justify-center" : "px-3 py-2",
             isChild && !isCollapsed ? "pl-8" : "",
-            isActive
-              ? "bg-primary/10 text-primary font-medium"
-              : "text-foreground/80 hover:bg-foreground/5 hover:text-foreground",
+            isActive ? cn(activeBgClass, activeTextClass) : cn(textColorClass, hoverBgClass),
           )}
           title={isCollapsed ? item.name : undefined}
         >
@@ -99,7 +142,7 @@ export function Sidebar() {
               className={cn(
                 "h-4 w-4 transition-transform",
                 isExpanded && "rotate-90",
-                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+                isActive ? activeIconClass : iconColorClass,
               )}
             />
           )}
@@ -107,26 +150,31 @@ export function Sidebar() {
             <span className="text-base">{IconComponent}</span>
           ) : IconComponent ? (
             <IconComponent
-              className={cn(
-                "h-4 w-4 flex-shrink-0 transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
-              )}
+              className={cn("h-4 w-4 flex-shrink-0 transition-colors", isActive ? activeIconClass : iconColorClass)}
             />
           ) : null}
           {!isCollapsed && (
             <>
               <span className="flex-1 truncate">{item.name}</span>
               {item.tag && (
-                <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded font-medium">
+                <span
+                  className={cn(
+                    "text-[10px] px-1.5 py-0.5 rounded font-medium",
+                    isDarkSidebar ? "bg-white/20 text-white" : "bg-primary text-primary-foreground",
+                  )}
+                >
                   {item.tag}
                 </span>
               )}
-              {item.external && <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-foreground" />}
+              {item.external && <ExternalLink className={cn("h-3 w-3", iconColorClass)} />}
               {item.hasAdd && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-5 w-5 opacity-0 group-hover:opacity-100"
+                  className={cn(
+                    "h-5 w-5 opacity-0 group-hover:opacity-100",
+                    isDarkSidebar && "text-white hover:bg-white/10",
+                  )}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Plus className="h-3 w-3" />
@@ -136,7 +184,10 @@ export function Sidebar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-5 w-5 opacity-0 group-hover:opacity-100"
+                  className={cn(
+                    "h-5 w-5 opacity-0 group-hover:opacity-100",
+                    isDarkSidebar && "text-white hover:bg-white/10",
+                  )}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MoreHorizontal className="h-4 w-4" />
@@ -152,7 +203,8 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-[56px] h-[calc(100vh-45px)] flex flex-col z-20 bg-card text-foreground border-r border-border transition-all duration-300",
+        "fixed left-0 top-14 h-[calc(100vh-56px)] flex flex-col z-20 border-r border-border transition-all duration-300",
+        !isDarkSidebar && "bg-card text-foreground",
         isCollapsed ? "w-0 overflow-hidden opacity-0 pointer-events-none" : "w-64",
       )}
     >
@@ -165,62 +217,85 @@ export function Sidebar() {
               {renderMenuItem(item)}
               {!isCollapsed && item.id === "projects" && expandedSections.includes("projects") && (
                 <div className="mt-1 space-y-0.5">
-                  {projectsItems.map((space) => (
-                    <div key={space.id}>
-                      <div
-                        onClick={() => toggleProject(space.id)}
-                        className="flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer group text-foreground/80 hover:bg-foreground/5 hover:text-foreground transition-all duration-150"
-                      >
-                        <ChevronRight
+                  {projectsItems.map((space) => {
+                    const projectTextClass = isDarkSidebar
+                      ? "text-white/80 hover:text-white"
+                      : "text-foreground/80 hover:text-foreground"
+                    const projectHoverBg = isDarkSidebar ? "hover:bg-white/10" : "hover:bg-foreground/5"
+                    const projectIconClass = isDarkSidebar
+                      ? "text-white/60 group-hover:text-white"
+                      : "text-muted-foreground group-hover:text-foreground"
+
+                    return (
+                      <div key={space.id}>
+                        <div
+                          onClick={() => toggleProject(space.id)}
                           className={cn(
-                            "h-4 w-4 transition-transform text-muted-foreground group-hover:text-foreground",
-                            expandedProjects.includes(space.id) && "rotate-90",
+                            "flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer group transition-all duration-150",
+                            projectTextClass,
+                            projectHoverBg,
                           )}
-                        />
-                        <span className="flex-1 truncate">{space.name}</span>
-                        {space.hasMore && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5 opacity-0 group-hover:opacity-100"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
+                        >
+                          <ChevronRight
+                            className={cn(
+                              "h-4 w-4 transition-transform",
+                              projectIconClass,
+                              expandedProjects.includes(space.id) && "rotate-90",
+                            )}
+                          />
+                          <span className="flex-1 truncate">{space.name}</span>
+                          {space.hasMore && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={cn(
+                                "h-5 w-5 opacity-0 group-hover:opacity-100",
+                                isDarkSidebar && "text-white hover:bg-white/10",
+                              )}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        {expandedProjects.includes(space.id) && space.children && (
+                          <div className="ml-4 space-y-0.5">
+                            {space.children.map((child: any) => {
+                              const ChildIcon = child.icon
+                              const isChildActive = pathname === child.href || child.active
+
+                              const childActiveText = isDarkSidebar
+                                ? "text-white font-medium"
+                                : "text-primary font-medium"
+                              const childActiveBg = isDarkSidebar ? "bg-white/20" : "bg-primary/10"
+                              const childActiveIcon = isDarkSidebar ? "text-white" : "text-primary"
+
+                              return (
+                                <Link
+                                  key={child.id}
+                                  href={child.href}
+                                  className={cn(
+                                    "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-all duration-150 group",
+                                    isChildActive
+                                      ? cn(childActiveBg, childActiveText)
+                                      : cn(projectTextClass, projectHoverBg),
+                                  )}
+                                >
+                                  <ChildIcon
+                                    className={cn(
+                                      "h-4 w-4 flex-shrink-0 transition-colors",
+                                      isChildActive ? childActiveIcon : projectIconClass,
+                                    )}
+                                  />
+                                  <span className="truncate">{child.name}</span>
+                                </Link>
+                              )
+                            })}
+                          </div>
                         )}
                       </div>
-                      {expandedProjects.includes(space.id) && space.children && (
-                        <div className="ml-4 space-y-0.5">
-                          {space.children.map((child: any) => {
-                            const ChildIcon = child.icon
-                            const isChildActive = pathname === child.href || child.active
-                            return (
-                              <Link
-                                key={child.id}
-                                href={child.href}
-                                className={cn(
-                                  "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-all duration-150 group",
-                                  isChildActive
-                                    ? "bg-primary/10 text-primary font-medium"
-                                    : "text-foreground/80 hover:bg-foreground/5 hover:text-foreground",
-                                )}
-                              >
-                                <ChildIcon
-                                  className={cn(
-                                    "h-4 w-4 flex-shrink-0 transition-colors",
-                                    isChildActive
-                                      ? "text-primary"
-                                      : "text-muted-foreground group-hover:text-foreground",
-                                  )}
-                                />
-                                <span className="truncate">{child.name}</span>
-                              </Link>
-                            )
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>

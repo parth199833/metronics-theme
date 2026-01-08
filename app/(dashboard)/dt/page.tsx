@@ -7,7 +7,7 @@ export default function DataTablePage() {
   return (
     <div className="flex flex-col h-[calc(100vh-56px)]">
       {/* Breadcrumb & Project Header */}
-      <div className="border-b border-border bg-card py-0 px-[5px]">
+      <div className="border-b border-border bg-card px-[15px] py-[5px]">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
           <span className="hover:underline cursor-pointer">Spaces</span>
           <span>/</span>
@@ -35,7 +35,7 @@ export default function DataTablePage() {
       </div>
 
       {/* Data Table Content */}
-      <div className="flex-1 overflow-auto p-4 bg-background">
+      <div className="flex-1 overflow-auto p-4 bg-card">
         <DataTable />
       </div>
     </div>

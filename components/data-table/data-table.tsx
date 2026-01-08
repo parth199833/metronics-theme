@@ -17,30 +17,25 @@ import {
   ChevronDown,
   ChevronRight,
   Search,
-  Sparkles,
   Plus,
-  LayoutGrid,
-  List,
   MoreHorizontal,
   Equal,
   ArrowUp,
   ArrowDown,
+  CheckSquare,
+  Bookmark,
+  TrendingUp,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import { JiraFilter, type FilterOption, type FilterGroup } from "./jira-filter"
 
 // Types
 export type Issue = {
@@ -420,13 +415,115 @@ const columns: ColumnDef<Issue>[] = [
   },
 ]
 
+const typeFilterOptions: FilterOption[] = [
+  {
+    id: "bug",
+    name: "Bug",
+    icon: (
+      <div className="w-4 h-4 rounded-sm bg-red-500 flex items-center justify-center">
+        <span className="text-white text-xs">●</span>
+      </div>
+    ),
+  },
+  {
+    id: "task",
+    name: "Task",
+    icon: (
+      <div className="w-4 h-4 rounded-sm bg-blue-500 flex items-center justify-center">
+        <CheckSquare className="w-3 h-3 text-white" />
+      </div>
+    ),
+  },
+  {
+    id: "story",
+    name: "Story",
+    icon: (
+      <div className="w-4 h-4 rounded-sm bg-green-500 flex items-center justify-center">
+        <Bookmark className="w-3 h-3 text-white" />
+      </div>
+    ),
+  },
+  {
+    id: "improvement",
+    name: "Improvement",
+    icon: (
+      <div className="w-4 h-4 rounded-sm bg-yellow-500 flex items-center justify-center">
+        <TrendingUp className="w-3 h-3 text-white" />
+      </div>
+    ),
+  },
+]
+
+const statusFilterOptions: FilterOption[] = [
+  { id: "todo", name: "TO DO", icon: <Badge className="bg-gray-600 text-white text-[10px] px-1.5 py-0">TO DO</Badge> },
+  { id: "new", name: "NEW", icon: <Badge className="bg-blue-500 text-white text-[10px] px-1.5 py-0">NEW</Badge> },
+  {
+    id: "in_progress",
+    name: "ANALYSIS IN PROGRESS",
+    icon: <Badge className="bg-blue-600 text-white text-[10px] px-1.5 py-0">IN PROGRESS</Badge>,
+  },
+  {
+    id: "under_observation",
+    name: "UNDER OBSERVATION",
+    icon: <Badge className="bg-yellow-500 text-black text-[10px] px-1.5 py-0">OBSERVATION</Badge>,
+  },
+  {
+    id: "released",
+    name: "RELEASED TO QA",
+    icon: <Badge className="bg-green-600 text-white text-[10px] px-1.5 py-0">RELEASED</Badge>,
+  },
+  {
+    id: "dev_review_done",
+    name: "DEV REVIEW DONE",
+    icon: <Badge className="bg-green-500 text-white text-[10px] px-1.5 py-0">DEV REVIEW</Badge>,
+  },
+  {
+    id: "fix_at_customer",
+    name: "FIX AT CUSTOMER ENV",
+    icon: <Badge className="bg-cyan-500 text-white text-[10px] px-1.5 py-0">CUSTOMER</Badge>,
+  },
+]
+
+const assigneeFilterGroups: FilterGroup[] = [
+  {
+    label: "Quick Options",
+    options: [
+      { id: "current_user", name: "Current User", color: "bg-purple-600", initials: "PP" },
+      { id: "unassigned", name: "Unassigned", color: "bg-gray-300", initials: "?" },
+    ],
+  },
+  {
+    label: "Suggested Users",
+    options: [
+      { id: "Aniket Dodiya", name: "Aniket Dodiya", color: "bg-green-600", initials: "AD" },
+      { id: "Shubham Pangale", name: "Shubham Pangale", color: "bg-purple-600", initials: "SP" },
+      { id: "Ankita Naik", name: "Ankita Naik", color: "bg-teal-600", initials: "AN" },
+      { id: "Sanjay Choudhary", name: "Sanjay Choudhary", color: "bg-orange-500", initials: "SC" },
+      { id: "Jaydeep Lakum", name: "Jaydeep Lakum", color: "bg-blue-600", initials: "JL" },
+      { id: "Diya Soni", name: "Diya Soni", color: "bg-pink-500", initials: "DS" },
+      { id: "Kundan Prabhakar", name: "Kundan Prabhakar", color: "bg-indigo-500", initials: "KP" },
+      { id: "Modh Pruthvi", name: "Modh Pruthvi", color: "bg-amber-500", initials: "MP" },
+    ],
+  },
+  {
+    label: "Suggested Groups",
+    options: [
+      { id: "group_dev", name: "Development Team", color: "bg-gray-500", initials: "DT" },
+      { id: "group_qa", name: "QA Team", color: "bg-gray-500", initials: "QA" },
+      { id: "group_design", name: "Design Team", color: "bg-gray-500", initials: "DE" },
+    ],
+  },
+]
+
 export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [globalFilter, setGlobalFilter] = React.useState("")
-  const [activeTab, setActiveTab] = React.useState<"basic" | "jql">("basic")
+  const [typeFilter, setTypeFilter] = React.useState<string[]>([])
+  const [statusFilter, setStatusFilter] = React.useState<string[]>([])
+  const [assigneeFilter, setAssigneeFilter] = React.useState<string[]>([])
 
   const table = useReactTable({
     data: sampleData,
@@ -460,22 +557,35 @@ export function DataTable() {
     },
   })
 
-  const uniqueStatuses = [...new Set(sampleData.map((d) => d.status))]
-  const uniquePriorities = [...new Set(sampleData.map((d) => d.priority))]
-  const uniqueAssignees = [
-    "unassigned",
-    ...new Set(sampleData.filter((d) => d.assignee).map((d) => d.assignee as string)),
-  ]
+  React.useEffect(() => {
+    if (typeFilter.length > 0) {
+      table.getColumn("type")?.setFilterValue(typeFilter)
+    } else {
+      table.getColumn("type")?.setFilterValue(undefined)
+    }
+  }, [typeFilter, table])
+
+  React.useEffect(() => {
+    if (statusFilter.length > 0) {
+      table.getColumn("status")?.setFilterValue(statusFilter)
+    } else {
+      table.getColumn("status")?.setFilterValue(undefined)
+    }
+  }, [statusFilter, table])
+
+  React.useEffect(() => {
+    if (assigneeFilter.length > 0) {
+      table.getColumn("assignee")?.setFilterValue(assigneeFilter)
+    } else {
+      table.getColumn("assignee")?.setFilterValue(undefined)
+    }
+  }, [assigneeFilter, table])
 
   return (
     <div className="w-full space-y-4">
       {/* Filter Bar */}
       <div className="data-table-filters flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
-
-
- 
-
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -505,81 +615,35 @@ export function DataTable() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Assignee Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1 bg-transparent rounded-none">
-                Assignee
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="rounded-none">
-              {uniqueAssignees.map((assignee) => (
-                <DropdownMenuCheckboxItem
-                  key={assignee}
-                  checked={
-                    (table.getColumn("assignee")?.getFilterValue() as string[] | undefined)?.includes(assignee) ?? false
-                  }
-                  onCheckedChange={(checked) => {
-                    const current = (table.getColumn("assignee")?.getFilterValue() as string[]) || []
-                    if (checked) {
-                      table.getColumn("assignee")?.setFilterValue([...current, assignee])
-                    } else {
-                      table.getColumn("assignee")?.setFilterValue(current.filter((v) => v !== assignee))
-                    }
-                  }}
-                >
-                  {assignee === "unassigned" ? "Unassigned" : assignee}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <JiraFilter
+            label="Assignee"
+            value={assigneeFilter}
+            onChange={setAssigneeFilter}
+            groups={assigneeFilterGroups}
+            showSearch={true}
+            searchPlaceholder="Search Assignee"
+            showAvatar={true}
+          />
 
-          {/* Type Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1 bg-transparent rounded-none">
-                Type
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="rounded-none">
-              <DropdownMenuCheckboxItem>Bug</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Task</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Story</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Improvement</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <JiraFilter
+            label="Type"
+            value={typeFilter}
+            onChange={setTypeFilter}
+            options={typeFilterOptions}
+            showSearch={true}
+            searchPlaceholder="Search Type"
+            showAvatar={false}
+          />
 
-          {/* Status Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1 bg-transparent rounded-none">
-                Status
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="rounded-none">
-              {uniqueStatuses.map((status) => (
-                <DropdownMenuCheckboxItem
-                  key={status}
-                  checked={
-                    (table.getColumn("status")?.getFilterValue() as string[] | undefined)?.includes(status) ?? false
-                  }
-                  onCheckedChange={(checked) => {
-                    const current = (table.getColumn("status")?.getFilterValue() as string[]) || []
-                    if (checked) {
-                      table.getColumn("status")?.setFilterValue([...current, status])
-                    } else {
-                      table.getColumn("status")?.setFilterValue(current.filter((v) => v !== status))
-                    }
-                  }}
-                >
-                  {status.replace(/_/g, " ").toUpperCase()}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <JiraFilter
+            label="Status"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={statusFilterOptions}
+            showSearch={true}
+            searchPlaceholder="Search Status"
+            showAvatar={false}
+          />
 
           {/* More Filters */}
           <Button variant="outline" size="sm" className="h-8 gap-1 bg-transparent rounded-none">
@@ -592,8 +656,6 @@ export function DataTable() {
             Save filter
           </Button>
         </div>
-
-       
       </div>
 
       {/* Table */}

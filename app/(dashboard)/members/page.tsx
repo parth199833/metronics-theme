@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export default function MembersRolesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mx-[5px]">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Members & Roles</h1>

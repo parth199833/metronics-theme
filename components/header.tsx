@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Bell, HelpCircle, Settings, Sparkles, PanelLeft, PanelLeftClose, LayoutGrid } from "lucide-react"
+import { Search, Bell, HelpCircle, Settings, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -33,7 +33,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
             onClick={toggleSidebar}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -55,7 +55,7 @@ export function Header() {
             <Input
               type="text"
               placeholder="Search"
-              className="w-full pl-10 pr-4 h-9 bg-muted/50 border-border focus:bg-background"
+              className="w-full pl-10 pr-4 h-9 bg-secondary border-border focus:bg-background"
             />
           </div>
         </div>
@@ -66,20 +66,24 @@ export function Header() {
             + Create
           </Button>
 
-          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-accent"
+          >
             <Sparkles className="h-4 w-4" />
             <span className="text-sm">Ask Rovo</span>
           </Button>
 
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
             <Bell className="h-4 w-4 text-muted-foreground" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
             <HelpCircle className="h-4 w-4 text-muted-foreground" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
             <Settings className="h-4 w-4 text-muted-foreground" />
           </Button>
 
