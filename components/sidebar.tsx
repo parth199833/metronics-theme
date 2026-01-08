@@ -203,7 +203,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-14 h-[calc(100vh-56px)] flex flex-col z-20 border-r border-border transition-all duration-300",
+        "fixed left-0 top-12 h-[calc(100vh-56px)] flex flex-col z-20 border-r border-border transition-all duration-300",
         !isDarkSidebar && "bg-card text-foreground",
         isCollapsed ? "w-0 overflow-hidden opacity-0 pointer-events-none" : "w-64",
       )}
