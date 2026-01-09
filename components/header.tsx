@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Search, Bell, HelpCircle, Settings, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserProfileMenu } from "@/components/user-profile-menu"
 
 export function Header() {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -87,10 +87,9 @@ export function Header() {
             <Settings className="h-4 w-4 text-muted-foreground" />
           </Button>
 
-          <Avatar className="h-8 w-8 ml-2">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" />
-            <AvatarFallback className="bg-purple-600 text-white text-xs">PP</AvatarFallback>
-          </Avatar>
+          <div className="ml-2">
+            <UserProfileMenu />
+          </div>
         </div>
       </div>
     </header>

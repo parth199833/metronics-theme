@@ -3,10 +3,48 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
-import { Star, LinkIcon, RefreshCw, Edit2, MoreHorizontal, Maximize2, Copy, Plus, Check, X } from "lucide-react"
+import {
+  Star,
+  LinkIcon,
+  RefreshCw,
+  Edit2,
+  MoreHorizontal,
+  Maximize2,
+  Copy,
+  Plus,
+  Check,
+  X,
+  ChevronDown,
+  BookOpen,
+} from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useState } from "react"
 import { GadgetPanel } from "@/components/gadget-panel"
+
+interface Dashboard {
+  id: string
+  name: string
+  description?: string
+  icon?: string
+}
+
+const dashboards: Dashboard[] = [
+  {
+    id: "intalk-bug-status",
+    name: "Intalk New UI - Bug Status React Team",
+    description: "Track bug status and priorities for React Team",
+  },
+  {
+    id: "daily-tasks",
+    name: "Daily Tasks",
+    description: "Daily task management and tracking",
+  },
+  {
+    id: "helpinbox-task-board",
+    name: "HELPINBOX - Task Board",
+    description: "Help inbox task tracking board",
+  },
+]
 
 const statusData = [
   { name: "Done", value: 960 },
@@ -82,6 +120,10 @@ export default function DashboardPage() {
   })
   const [editingChart, setEditingChart] = useState<string | null>(null)
   const [tempTitle, setTempTitle] = useState("")
+  const [expandedSections, setExpandedSections] = useState({
+    dashboards: true,
+    starred: true,
+  })
 
   const handleTitleClick = (chartId: string, currentTitle: string) => {
     if (isEditMode) {
@@ -99,6 +141,13 @@ export default function DashboardPage() {
     }
     setEditingChart(null)
     setTempTitle("")
+  }
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }))
   }
 
   const layoutOptions = [
@@ -134,10 +183,29 @@ export default function DashboardPage() {
       <div
         className={`flex-1 px-4 py-4 space-y-6 transition-all duration-300 ${isGadgetPanelOpen ? "mr-[400px]" : ""}`}
       >
+        {/* Dashboards Section */}
+        
+
+        {/* Starred Section */}
+        <div className="space-y-3">
+          
+
+          {/* Starred Dashboards List */}
+          {expandedSections.starred && (
+            <div className="space-y-2 pl-6">
+              {dashboards.slice(0, 3).map((dashboard) => (
+                null
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-6 leading-7">
           <div>
-            <h1 className="font-bold text-foreground text-lg">Intalk New UI - Bug Status React Team</h1>
+            {expandedSections.dashboards && (
+              <h1 className="font-bold text-foreground text-lg">Intalk New UI - Bug Status React Team</h1>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {isEditMode ? (

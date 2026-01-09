@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Home, ChevronRight, Plus, MoreHorizontal, ExternalLink, Settings, Users, Table2 } from "lucide-react"
+import { Home, ChevronRight, Plus, MoreHorizontal, ExternalLink, Settings, Users, Table2, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -23,6 +23,14 @@ const projectsItems = [
     children: [{ id: "intalk", name: "InTalk", icon: Table2, href: "/dt", active: true }],
   },
 ]
+
+const dashboards = [
+  { id: "intalk-bug", name: "Intalk New UI - Bug Status React Team" },
+  { id: "daily-tasks", name: "Daily Tasks" },
+  { id: "helpinbox", name: "HELPINBOX - Task Board" },
+]
+
+const filters = [{ id: "datatable", name: "DataTable", icon: Table2, href: "/dt" }]
 
 function isColorDark(hexColor: string): boolean {
   if (!hexColor || hexColor.length < 7) return false
@@ -46,6 +54,10 @@ function getCookie(name: string): string | null {
 export function Sidebar() {
   const [expandedSections, setExpandedSections] = useState<string[]>(["projects"])
   const [expandedProjects, setExpandedProjects] = useState<string[]>(["technology"])
+  const [dashboardSections, setDashboardSections] = useState({
+    dashboards: true,
+    starred: true,
+  })
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isDarkSidebar, setIsDarkSidebar] = useState(false)
   const pathname = usePathname()
@@ -103,6 +115,24 @@ export function Sidebar() {
 
   const toggleProject = (id: string) => {
     setExpandedProjects((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
+  }
+
+  const toggleDashboardSection = (section: string) => {
+    setDashboardSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }))
+  }
+
+  const [filterSections, setFilterSections] = useState({
+    filters: true,
+  })
+
+  const toggleFilterSection = (section: string) => {
+    setFilterSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }))
   }
 
   const renderMenuItem = (item: any, isChild = false) => {
@@ -214,89 +244,124 @@ export function Sidebar() {
         <div className="px-2 py-2 space-y-0.5">
           {topMenuItems.map((item) => (
             <div key={item.id}>
-              {renderMenuItem(item)}
-              {!isCollapsed && item.id === "projects" && expandedSections.includes("projects") && (
-                <div className="mt-1 space-y-0.5">
-                  {projectsItems.map((space) => {
-                    const projectTextClass = isDarkSidebar
-                      ? "text-white/80 hover:text-white"
-                      : "text-foreground/80 hover:text-foreground"
-                    const projectHoverBg = isDarkSidebar ? "hover:bg-white/10" : "hover:bg-foreground/5"
-                    const projectIconClass = isDarkSidebar
-                      ? "text-white/60 group-hover:text-white"
-                      : "text-muted-foreground group-hover:text-foreground"
-
-                    return (
-                      <div key={space.id}>
-                        <div
-                          onClick={() => toggleProject(space.id)}
+              {item.id === "dashboard" ? (
+                <>
+                  {/* Dashboards Section */}
+                  <div className="space-y-1 group">
+                    <div className="flex items-center justify-between px-2 py-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleDashboardSection("dashboards")}
                           className={cn(
-                            "flex items-center gap-2 px-3 py-2 text-sm rounded-md cursor-pointer group transition-all duration-150",
-                            projectTextClass,
-                            projectHoverBg,
+                            "p-0 text-muted-foreground hover:text-foreground transition-colors",
+                            isDarkSidebar && "text-white/60 hover:text-white",
                           )}
                         >
                           <ChevronRight
-                            className={cn(
-                              "h-4 w-4 transition-transform",
-                              projectIconClass,
-                              expandedProjects.includes(space.id) && "rotate-90",
-                            )}
+                            className={cn("h-4 w-4 transition-transform", dashboardSections.dashboards && "rotate-90")}
                           />
-                          <span className="flex-1 truncate">{space.name}</span>
-                          {space.hasMore && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className={cn(
-                                "h-5 w-5 opacity-0 group-hover:opacity-100",
-                                isDarkSidebar && "text-white hover:bg-white/10",
-                              )}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                        {expandedProjects.includes(space.id) && space.children && (
-                          <div className="ml-4 space-y-0.5">
-                            {space.children.map((child: any) => {
-                              const ChildIcon = child.icon
-                              const isChildActive = pathname === child.href || child.active
-
-                              const childActiveText = isDarkSidebar
-                                ? "text-white font-medium"
-                                : "text-primary font-medium"
-                              const childActiveBg = isDarkSidebar ? "bg-white/20" : "bg-primary/10"
-                              const childActiveIcon = isDarkSidebar ? "text-white" : "text-primary"
-
-                              return (
-                                <Link
-                                  key={child.id}
-                                  href={child.href}
-                                  className={cn(
-                                    "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-all duration-150 group",
-                                    isChildActive
-                                      ? cn(childActiveBg, childActiveText)
-                                      : cn(projectTextClass, projectHoverBg),
-                                  )}
-                                >
-                                  <ChildIcon
-                                    className={cn(
-                                      "h-4 w-4 flex-shrink-0 transition-colors",
-                                      isChildActive ? childActiveIcon : projectIconClass,
-                                    )}
-                                  />
-                                  <span className="truncate">{child.name}</span>
-                                </Link>
-                              )
-                            })}
-                          </div>
-                        )}
+                        </button>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          Dashboards
+                        </span>
                       </div>
-                    )
-                  })}
-                </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          "h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground",
+                          isDarkSidebar && "text-white/60 hover:text-white",
+                        )}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                    {/* Dashboards List */}
+                    {dashboardSections.dashboards && (
+                      <div className="space-y-0.5">
+                        {dashboards.map((dashboard) => (
+                          <Link
+                            key={dashboard.id}
+                            href="/dashboard"
+                            className={cn(
+                              "flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-all duration-150 group ml-2",
+                              isDarkSidebar
+                                ? "text-white/70 hover:text-white hover:bg-white/10"
+                                : "text-foreground/70 hover:text-foreground hover:bg-foreground/5",
+                            )}
+                          >
+                            <BookOpen className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground" />
+                            <span className="truncate text-xs">{dashboard.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Starred Section */}
+                  <div className="space-y-1 mt-3">
+                    {/* Starred Dashboards List */}
+                    {dashboardSections.starred && (
+                      <div className="space-y-0.5">{dashboards.slice(0, 2).map((dashboard) => null)}</div>
+                    )}
+                  </div>
+
+                  {/* Filters Section */}
+                  <div className="space-y-1 mt-4 group">
+                    <div className="flex items-center justify-between px-2 py-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleFilterSection("filters")}
+                          className={cn(
+                            "p-0 text-muted-foreground hover:text-foreground transition-colors",
+                            isDarkSidebar && "text-white/60 hover:text-white",
+                          )}
+                        >
+                          <ChevronRight
+                            className={cn("h-4 w-4 transition-transform", filterSections.filters && "rotate-90")}
+                          />
+                        </button>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          Filters
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          "h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground",
+                          isDarkSidebar && "text-white/60 hover:text-white",
+                        )}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                    {/* Filters List */}
+                    {filterSections.filters && (
+                      <div className="space-y-0.5">
+                        {filters.map((filter) => (
+                          <Link
+                            key={filter.id}
+                            href={filter.href}
+                            className={cn(
+                              "flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-all duration-150 group ml-2",
+                              isDarkSidebar
+                                ? "text-white/70 hover:text-white hover:bg-white/10"
+                                : "text-foreground/70 hover:text-foreground hover:bg-foreground/5",
+                            )}
+                          >
+                            <filter.icon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground" />
+                            <span className="truncate text-xs">{filter.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                renderMenuItem(item)
               )}
             </div>
           ))}
