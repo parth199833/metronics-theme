@@ -28,6 +28,7 @@ const dashboards = [
   { id: "intalk-bug", name: "Intalk New UI - Bug Status React Team" },
   { id: "daily-tasks", name: "Daily Tasks" },
   { id: "helpinbox", name: "HELPINBOX - Task Board" },
+  { id: "viewalldasboard", name: "View All Dashboard" }
 ]
 
 const filters = [{ id: "datatable", name: "DataTable", icon: Table2, href: "/dt" }]
