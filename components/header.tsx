@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Bell, HelpCircle, Settings, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react"
+import { Search, Bell, HelpCircle, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { UserProfileMenu } from "@/components/user-profile-menu"
+import { SettingsMenu } from "@/components/settings-menu"
 
 export function Header() {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -83,9 +84,7 @@ export function Header() {
             <HelpCircle className="h-4 w-4 text-muted-foreground" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-            <Settings className="h-4 w-4 text-muted-foreground" />
-          </Button>
+          <SettingsMenu />
 
           <div className="ml-2">
             <UserProfileMenu />
