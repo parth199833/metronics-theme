@@ -28,10 +28,13 @@ const dashboards = [
   { id: "intalk-bug", name: "Intalk New UI - Bug Status React Team" },
   { id: "daily-tasks", name: "Daily Tasks" },
   { id: "helpinbox", name: "HELPINBOX - Task Board" },
-  { id: "viewalldasboard", name: "View All Dashboard" }
+  { id: "viewalldasboard", name: "View All Dashboard" },
 ]
 
-const filters = [{ id: "datatable", name: "DataTable", icon: Table2, href: "/dt" }]
+const filters = [
+  { id: "datatable", name: "DataTable", icon: Table2, href: "/dt" },
+  { id: "viewall", name: "View All Data", icon: BookOpen, href: "/filters/viewall" },
+]
 
 function isColorDark(hexColor: string): boolean {
   if (!hexColor || hexColor.length < 7) return false
@@ -353,7 +356,9 @@ export function Sidebar() {
                                 : "text-foreground/70 hover:text-foreground hover:bg-foreground/5",
                             )}
                           >
-                            <filter.icon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground" />
+                            {filter.icon && (
+                              <filter.icon className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground" />
+                            )}
                             <span className="truncate text-xs">{filter.name}</span>
                           </Link>
                         ))}
