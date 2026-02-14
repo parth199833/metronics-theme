@@ -1,13 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import { X, Menu, Edit2, LayoutGrid, MoreHorizontal, Plus, Settings2, MessageSquare, ChevronDown, Sparkles, Bot, AlignJustify, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useState, useEffect, useRef } from "react"
 
-interface RovoAIPanelProps {
-  isOpen: boolean
-  onClose: () => void
+interface Message {
+  id: string
+  type: 'user' | 'assistant'
+  content: string
+  isStreaming?: boolean
 }
 
 interface Message {
@@ -70,6 +69,15 @@ export function RovoAIPanel({ isOpen, onClose }: RovoAIPanelProps) {
   const [inputValue, setInputValue] = useState("")
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   const handleSubmit = () => {
     if (!inputValue.trim()) return
@@ -83,17 +91,45 @@ export function RovoAIPanel({ isOpen, onClose }: RovoAIPanelProps) {
 
     setMessages(prev => [...prev, userMessage])
 
-    // Simulate AI response
+    // Add streaming assistant message
+    const userInput = inputValue
     setTimeout(() => {
-      const response = sampleResponses[inputValue] || "I'm here to help! Please provide more details about what you need, and I'll do my best to assist you with your Jira workflow and project management."
+      const response = sampleResponses[userInput] || "I'm here to help! Please provide more details about what you need, and I'll do my best to assist you with your Jira workflow and project management."
       
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
         type: 'assistant',
-        content: response,
+        content: '',
+        isStreaming: true,
       }
 
       setMessages(prev => [...prev, assistantMessage])
+
+      // Stream the response character by character
+      let charIndex = 0
+      const streamInterval = setInterval(() => {
+        if (charIndex < response.length) {
+          setMessages(prev => {
+            const newMessages = [...prev]
+            const lastMessage = newMessages[newMessages.length - 1]
+            if (lastMessage && lastMessage.type === 'assistant') {
+              lastMessage.content += response[charIndex]
+            }
+            return newMessages
+          })
+          charIndex++
+        } else {
+          clearInterval(streamInterval)
+          setMessages(prev => {
+            const newMessages = [...prev]
+            const lastMessage = newMessages[newMessages.length - 1]
+            if (lastMessage && lastMessage.type === 'assistant') {
+              lastMessage.isStreaming = false
+            }
+            return newMessages
+          })
+        }
+      }, 15) // Adjust speed (milliseconds per character)
     }, 500)
 
     setInputValue("")
@@ -303,16 +339,20 @@ export function RovoAIPanel({ isOpen, onClose }: RovoAIPanelProps) {
                   )}
                   <div
                     className={cn(
-                      "max-w-[280px] rounded-lg px-3 py-2 text-sm",
+                      "rounded-lg px-3 py-2 text-sm max-w-[280px] break-words",
                       message.type === 'user'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary text-foreground'
                     )}
                   >
-                    <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    {message.isStreaming && (
+                      <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse rounded-sm" />
+                    )}
                   </div>
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
