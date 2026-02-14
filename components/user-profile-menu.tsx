@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ChevronRight, LogOut, Settings, User, Users } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -12,12 +12,19 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function UserProfileMenu() {
-  const [open, setOpen] = useState(false)
+  const router = useRouter()
+
+  const handleLogout = () => {
+    router.push("/login")
+  }
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <button 
+          type="button"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer focus:outline-none"
+        >
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder.svg?height=32&width=32" />
             <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">PP</AvatarFallback>
@@ -25,7 +32,7 @@ export function UserProfileMenu() {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-64 p-0" align="end">
+      <DropdownMenuContent className="w-64 p-0" align="end" sideOffset={8}>
         {/* User Info Header */}
         <div className="px-4 py-3 border-b border-border bg-muted/50">
           <div className="flex items-center gap-3">
@@ -77,7 +84,10 @@ export function UserProfileMenu() {
             <span>Switch account</span>
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="px-4 py-2 cursor-pointer flex items-center gap-3 text-sm text-red-600 hover:text-red-700">
+          <DropdownMenuItem
+            onSelect={handleLogout}
+            className="px-4 py-2 cursor-pointer flex items-center gap-3 text-sm text-red-600 hover:text-red-700"
+          >
             <LogOut className="h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>

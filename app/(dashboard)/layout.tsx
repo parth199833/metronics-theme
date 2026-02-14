@@ -15,13 +15,21 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [sidebarWidth, setSidebarWidth] = useState(256)
+  const [isRovoOpen, setIsRovoOpen] = useState(false)
 
   useEffect(() => {
     const handleSidebarToggle = (e: CustomEvent) => {
       setSidebarWidth(e.detail.width ?? (e.detail.collapsed ? 0 : 256))
     }
+    const handleRovoToggle = (e: CustomEvent) => {
+      setIsRovoOpen(e.detail.isOpen)
+    }
     window.addEventListener("toggleSidebar", handleSidebarToggle as EventListener)
-    return () => window.removeEventListener("toggleSidebar", handleSidebarToggle as EventListener)
+    window.addEventListener("toggleRovo", handleRovoToggle as EventListener)
+    return () => {
+      window.removeEventListener("toggleSidebar", handleSidebarToggle as EventListener)
+      window.removeEventListener("toggleRovo", handleRovoToggle as EventListener)
+    }
   }, [])
 
   return (
@@ -30,7 +38,7 @@ export default function DashboardLayout({
       <Sidebar />
       <main
         className="pt-14 transition-all duration-300 bg-background pl-[5px]"
-        style={{ marginLeft: `${sidebarWidth}px` }}
+        style={{ marginLeft: `${sidebarWidth}px`, marginRight: isRovoOpen ? '420px' : '0px' }}
       >
         {children}
       </main>

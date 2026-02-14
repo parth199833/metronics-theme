@@ -61,10 +61,10 @@ export function TabEditor({
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 cursor-pointer border-r border-border whitespace-nowrap transition-colors",
+                "flex items-center gap-2 px-4 py-2 cursor-pointer border-r border-border whitespace-nowrap transition-all duration-150 group",
                 localActiveTab === tab.id
                   ? "bg-background text-foreground border-b-2 border-b-primary"
-                  : "bg-card text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  : "bg-card text-muted-foreground hover:bg-secondary hover:text-foreground hover:shadow-sm",
               )}
             >
               <File className="h-4 w-4" />
@@ -75,7 +75,7 @@ export function TabEditor({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 ml-1 hover:bg-muted"
+                  className="h-6 w-6 ml-1 hover:bg-muted cursor-pointer transition-all duration-150"
                   onClick={(e) => handleTabClose(e, tab.id)}
                 >
                   <X className="h-3 w-3" />
@@ -85,7 +85,12 @@ export function TabEditor({
               {index === tabs.length - 1 && (
                 <div className="flex items-center gap-1 ml-2">
                   <div className="h-5 w-px bg-border" />
-                  <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-muted" onClick={onAddTab}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 hover:bg-muted cursor-pointer transition-all duration-150"
+                    onClick={onAddTab}
+                  >
                     <Plus className="h-4 w-4 text-muted-foreground" />
                   </Button>
                 </div>

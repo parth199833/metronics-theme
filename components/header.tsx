@@ -1,14 +1,22 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Bell, HelpCircle, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react"
+import { Search, HelpCircle, Sparkles, PanelLeft, PanelLeftClose } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { UserProfileMenu } from "@/components/user-profile-menu"
 import { SettingsMenu } from "@/components/settings-menu"
+import { NotificationsPanel } from "@/components/notifications-panel"
+import { RovoAIPanel } from "@/components/rovo-ai-panel"
 
 export function Header() {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isRovoOpen, setIsRovoOpen] = useState(false)
+
+  const handleRovoToggle = (isOpen: boolean) => {
+    setIsRovoOpen(isOpen)
+    window.dispatchEvent(new CustomEvent("toggleRovo", { detail: { isOpen } }))
+  }
 
   useEffect(() => {
     const handleSidebarToggle = (e: CustomEvent) => {
@@ -34,7 +42,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent cursor-pointer transition-all duration-200"
             onClick={toggleSidebar}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -70,17 +78,20 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-accent"
+            className="gap-1.5 text-muted-foreground hover:text-foreground hover:bg-accent cursor-pointer transition-all duration-200"
+            onClick={() => handleRovoToggle(true)}
           >
             <Sparkles className="h-4 w-4" />
             <span className="text-sm">Ask Rovo</span>
           </Button>
 
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-            <Bell className="h-4 w-4 text-muted-foreground" />
-          </Button>
+          <NotificationsPanel />
 
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-accent cursor-pointer transition-all duration-200"
+          >
             <HelpCircle className="h-4 w-4 text-muted-foreground" />
           </Button>
 
@@ -91,6 +102,9 @@ export function Header() {
           </div>
         </div>
       </div>
+
+      {/* Rovo AI Panel */}
+      <RovoAIPanel isOpen={isRovoOpen} onClose={() => handleRovoToggle(false)} />
     </header>
   )
 }

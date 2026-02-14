@@ -88,7 +88,7 @@ export function GadgetPanel({ isOpen, onClose, availableGadgets }: GadgetPanelPr
             {filteredGadgets.map((gadget) => (
               <div
                 key={gadget.id}
-                className="flex gap-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                className="flex gap-3 p-3 rounded-lg border border-border hover:bg-accent/50 hover:border-primary transition-all duration-200 cursor-pointer"
               >
                 <div className="flex-shrink-0">
                   <img
@@ -114,7 +114,7 @@ export function GadgetPanel({ isOpen, onClose, availableGadgets }: GadgetPanelPr
                   </div>
                 </div>
                 <div className="flex-shrink-0 self-start">
-                  <Button size="sm" className="whitespace-nowrap">
+                  <Button size="sm" className="whitespace-nowrap cursor-pointer transition-all duration-150">
                     Add
                   </Button>
                 </div>
