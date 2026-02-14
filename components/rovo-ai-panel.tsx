@@ -318,22 +318,7 @@ export function RovoAIPanel({ isOpen, onClose }: RovoAIPanelProps) {
         </div>
 
         {/* Context Section */}
-        <div className="px-4 py-2 border-t border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Context:</span>
-            <div className="flex items-center gap-1 px-2 py-1 bg-secondary rounded text-xs">
-              <div className="w-4 h-4 bg-blue-500 rounded flex items-center justify-center">
-                <span className="text-white text-[8px] font-bold">T</span>
-              </div>
-              <span className="text-foreground">Technology</span>
-              <span className="text-muted-foreground">|</span>
-              <span className="text-primary">All work</span>
-            </div>
-            <Button variant="ghost" size="icon" className="h-5 w-5 ml-auto cursor-pointer hover:bg-accent">
-              <X className="h-3 w-3 text-muted-foreground" />
-            </Button>
-          </div>
-        </div>
+        
 
         {/* Input Section */}
         <div className="p-4 border-t border-border">
