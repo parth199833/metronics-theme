@@ -1,18 +1,20 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { X, Menu, Edit2, LayoutGrid, MoreHorizontal, Plus, Settings2, MessageSquare, ChevronDown, Sparkles, Bot, AlignJustify, Send } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
-interface Message {
-  id: string
-  type: 'user' | 'assistant'
-  content: string
-  isStreaming?: boolean
+interface RovoAIPanelProps {
+  isOpen: boolean
+  onClose: () => void
 }
 
 interface Message {
   id: string
   type: 'user' | 'assistant'
   content: string
+  isStreaming?: boolean
 }
 
 const suggestionPrompts = [
