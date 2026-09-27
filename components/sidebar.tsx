@@ -94,7 +94,7 @@ export function Sidebar() {
 
   useEffect(() => {
     window.dispatchEvent(
-      new CustomEvent("toggleSidebar", { detail: { collapsed: isCollapsed, width: isCollapsed ? 64 : 256 } }),
+      new CustomEvent("toggleSidebar", { detail: { collapsed: isCollapsed, width: isCollapsed ? 0 : 256 } }),
     )
   }, [isCollapsed])
 
@@ -239,7 +239,7 @@ export function Sidebar() {
       className={cn(
         "fixed left-0 top-12 h-[calc(100vh-56px)] flex flex-col z-20 border-r border-border transition-all duration-300",
         !isDarkSidebar && "bg-card text-foreground",
-        isCollapsed ? "w-16" : "w-64",
+        isCollapsed ? "w-0 overflow-hidden opacity-0 pointer-events-none" : "w-64",
       )}
     >
       {/* Scrollable Content */}
